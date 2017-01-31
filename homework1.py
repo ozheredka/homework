@@ -1,6 +1,6 @@
 import re
 class Person:
-    def __init__(self, name): #phone, email, position
+    def __init__(self, obj): 
         self.name = self.findname
         self.phone = self.findphone
         self.email = self.findemail
