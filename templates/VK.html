@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Члены групп ВКонтакте</title>
+    <style>
+        .pos {vertical-align: sub; color: blue; font-size: 70%;}
+        .result {font-size: 24px;}
+    </style>
+</head>
+<body>
+	<a href="/">Вернуться на главную</a>
+    <form method='post'>
+        <label>Номер первой группы:<input type="text" name="group_id1"></label> 
+                <br>
+        <label>Номер второй группы:<input type="text" name="group_id2"></label>
+        <input type="submit" value="Вывести результат">
+    </form>
+
+    {% if num1 and num2 and num_both %}
+    	<p>Номер первой группы: {{ group_id1 }}  Количество подписчиков: {{ num1 }}</p>
+        <p>Номер второй группы: {{ group_id2 }}  Количество подписчиков: {{ num2 }}</p>
+        <p>Подписчики в обеих группах: {{ num_both }}</p>
+		
+    {% endif %}
+
+</body>
+</html>
