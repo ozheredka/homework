@@ -2,6 +2,8 @@ from flask import Flask
 from flask import url_for, render_template, request, redirect
 from pymystem3 import Mystem
 from collections import Counter
+import pymorphy2
+import re
 import requests
 import json
 
@@ -44,7 +46,6 @@ def verb_analysis(text):
              + '\n Глаголов несовершенного вида: {}'.format(imperfect_num)
     return result, lemmas
 
-
 def vk_api(method, **kwargs):
     api_request = 'https://api.vk.com/method/'+method + '?'
     api_request += '&'.join(['{}={}'.format(key, kwargs[key]) for key in kwargs])
@@ -60,6 +61,37 @@ def VK(group1, group2):
     return members_group1, members_group2, members_both
 
 
+def talking_app(text1):
+    morph = pymorphy2.MorphAnalyzer()
+    f = open('words.txt', 'r', encoding='utf-8').read()[:60000]
+    corpus = re.sub('\d+', '', f)
+    d = {}
+    for i in corpus.split():
+        t = morph.parse(i)
+        word = t[0]
+        d[i] = str(word.tag).split()[0]
+
+    new_sent = []
+
+    for i in text1.split():
+        ana = morph.parse(i)
+        a = ana[0]
+        tag_first_part = str(a.tag).split()[0]
+        tag_change = str(a.tag).split()[-1].split(',')
+
+        for j in d:
+            if d[j] == tag_first_part:
+                new_word = morph.parse(j)[0]
+                for k in tag_change:
+                    nw = new_word.inflect({k})
+                    new_word = nw
+                new_sent.append(new_word.word)
+                break
+
+    new_sent = ' '.join(new_sent)
+    return new_sent
+
+
 @app.route('/verbform', methods=['get', 'post'])
 def verbform():
     if request.form:
@@ -69,11 +101,6 @@ def verbform():
         return render_template('verbforms_page.html', input=text, text=result, data=lemmas)
     return render_template('verbforms_page.html')
 
-
-@app.route('/', methods=['get'])
-def index():
-    return render_template('index.html')
-
 @app.route('/VKapi', methods=['get', 'post'])
 def VKapi():
     if request.form:
@@ -82,6 +109,20 @@ def VKapi():
         num1, num2, num_both = VK(group_id1, group_id2)
         return render_template('VK.html', group_id1=group_id1, group_id2=group_id2, num1=num1, num2=num2, num_both=num_both)
     return render_template('VK.html')
+
+@app.route('/talkingapp', methods=['get', 'post'])
+def talkingapp():
+    if request.form:
+        text1 = request.form['text']
+        new_sent = talking_app(text1).replace('\n', '<br>')
+        return render_template('talkingapp.html', input=text1, text=new_sent)
+    return render_template('talkingapp.html')
+
+
+@app.route('/', methods=['get'])
+def index():
+    return render_template('index.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
