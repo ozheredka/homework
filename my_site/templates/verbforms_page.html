@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Анализ глаголов</title>
+    <style>
+        .pos {vertical-align: sub; color: blue; font-size: 70%;}
+        .result {font-size: 24px;}
+    </style>
+	
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load("current", {packages:["corechart"]});
+      google.charts.setOnLoadCallback(drawChart);
+	  google.charts.setOnLoadCallback(drawAnotherChart);
+
+      function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Глагол');
+        data.addColumn('number', 'Количество');
+        data.addRows([
+		{% for verb, num in data.items() %}
+              ['{{ verb }}', {{ num }}],
+		{% endfor %}
+
+        ]);
+		
+        var options = {
+          title: 'Количество переходных/непереходных глаголов',
+          pieHole: 0.4,
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
+        chart.draw(data, options);
+      }
+	  
+      function drawAnotherChart() {
+        var data1 = new google.visualization.DataTable();
+        data1.addColumn('string', 'Глагол');
+        data1.addColumn('number', 'Количество');
+        data1.addRows([
+		{% for verb, num in data1.items() %}
+              ['{{ verb }}', {{ num }}],
+		{% endfor %}
+
+        ]);
+		
+        var options = {
+          title: 'Количество глаголов совершенного/несовершенного вида',
+          pieHole: 0.4,
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('donutchart1'));
+        chart.draw(data1, options);
+      }
+	  </script>
+
+</head>
+<body>
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">OZHER-Project</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/">Home</a></li>
+            <li class="active"><a href="/verbform">Анализ глаголов</a></li>
+            <li><a href="/VKapi">Подписчики Вконтакте</a></li>
+			<li><a href="/talkingapp">БОТ</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+	
+	<br><br><br>
+    <form method='post'>
+		<div class="col-lg-5">
+			<h1>Ваш текст:</h1>
+			<textarea rows="4" cols="50" name="text" class="form-control">{{ input }}</textarea>
+			<br>
+			<button type="submit" class="btn btn-default">Разобрать</button>
+		</div>
+    </form>
+
+	<br><br>
+	<div class="col-lg-8">	
+		{% if text %}
+		
+			<h1>Разбор:</h1>
+			<table class="columns">
+				<tr>
+					<td><div id="donutchart" ></div></td>
+					<td><div id="donutchart1" ></div></td>
+				</tr>
+			</table>
+		
+		
+			<p class="result"> {{ text | safe}}</p>
+			<div class="col-lg-3">
+				<ul class="list-group">
+					{% for verb, number in datadata.items() %}
+						<li class="list-group-item">{{ verb }} - {{ number }}</li>
+					{% endfor %}
+				</ul>
+			</div>	
+		{% endif %}
+	</div>
+</body>
+</html>

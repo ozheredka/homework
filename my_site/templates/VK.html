@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Члены групп ВКонтакте</title>
+    <style>
+        .pos {vertical-align: sub; color: blue; font-size: 70%;}
+        .result {font-size: 24px;}
+    </style>
+	
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type="text/javascript">
+    google.charts.load("current", {packages:["corechart"], 'language': 'ru'});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Группа');
+      data.addColumn('number', 'Количество');
+	  
+	  data.addRows([
+	  {% for group, num in data.items() %}
+              ['{{ group }}', {{ num }}],
+	  {% endfor %}
+
+	  	  ]);
+
+
+      var options = {
+        title: "Количество подписчиков в группах ВКонтакте",
+        width: 500,
+        height: 300,
+        legend: { position: "none" }};
+
+      var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+      chart.draw(data, options);
+  }
+  </script>
+	
+</head>
+<body>
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">OZHER-Project</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/">Home</a></li>
+            <li><a href="/verbform">Анализ глаголов</a></li>
+            <li class="active"><a href="/VKapi">Подписчики Вконтакте</a></li>
+			<li ><a href="/talkingapp">БОТ</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+	
+	<br><br><br>
+    <form method='post'> <br>
+		<div class="col-lg-8">
+			<div class="input-group input-group-lg">
+					<span class="input-group-addon" id="sizing-addon1">Номер или название первой группы:</span>
+					<input type="text" class="form-control" aria-describedby="sizing-addon1" name="group_id1">
+			</div>
+		
+                <br>
+				<br>
+			<div class="input-group input-group-lg">
+				<span class="input-group-addon" id="sizing-addon1">Номер или название второй группы:</span>
+				<input type="text" class="form-control" aria-describedby="sizing-addon1" name="group_id2">
+			</div>
+			<br>
+			<button type="submit" class="btn btn-default">Вывести результат</button>
+        </div>
+    </form>
+
+    {% if num1 and num2 and num_both %}
+		<div id="chart_div"></div>
+    	<p>Номер первой группы: {{ group_id1 }} <br> Количество подписчиков: {{ num1 }}</p>
+        <p>Номер второй группы: {{ group_id2 }} <br> Количество подписчиков: {{ num2 }}</p>
+        <p>Подписчики в обеих группах: {{ num_both }}</p>
+		
+    {% endif %}
+
+</body>
+</html>
